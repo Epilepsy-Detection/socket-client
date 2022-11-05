@@ -9,7 +9,7 @@ const axios = require('axios');
 // Open connection to the server
 // Send EEG data through the socket connection
 
-const getToken = async () => {
+const authenticateSocket = async () => {
   try {
       const resp = await axios.post('http://localhost:9000/api/v1/auth/login', {
         email: config.email,
@@ -42,6 +42,5 @@ const getToken = async () => {
   }
 };
 
-
-getToken();
+authenticateSocket();
 
