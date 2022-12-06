@@ -8,7 +8,6 @@ const args = process.argv.slice(2);
 const role = args[0] ?? 'doctor';
 const config = require('./config')(role);
 
-
 const authenticateSocket = async () => {
   try {
     // authenticate using auth API (email, password)
@@ -51,8 +50,8 @@ const authenticateSocket = async () => {
     });
 
     socket.on('connect_error', (err) => {
-      // console.log('Failed to connect', err);
-      console.log('Failed to connect');
+      console.log('Failed to connect', err);
+      // console.log('Failed to connect');
     });
   } catch (err) {
     console.error(err);
