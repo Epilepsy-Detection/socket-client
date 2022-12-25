@@ -14,7 +14,7 @@ module.exports = (role) => {
   return {
     ...creds,
     API_URL: 'http://localhost:9000/api/v1',
-    SOCKET_URL: 'http://localhost:9000',
+    SOCKET_URL: 'http://localhost:3000',
     FILE_NAME: '/F001.txt',
     FILE_PATH: __dirname,
   };

@@ -38,6 +38,15 @@ const authenticateSocket = async () => {
         readFileAsStream(fileName, (chunk) => {
           socket.emit('new-eeg-batch-message', chunk);
         });
+      } else if (role === 'doctor') {
+        socket.emit("get_active_patients")
+      }
+    });
+
+    socket.on("active_patients_result", (patientsIds) => {
+      if (patientsIds && patientsIds.length > 0) {
+        const patientId = patientsIds[0];
+        socket.emit("associate_patient", patientId);
       }
     });
 
@@ -51,7 +60,6 @@ const authenticateSocket = async () => {
 
     socket.on('connect_error', (err) => {
       console.log('Failed to connect', err);
-      // console.log('Failed to connect');
     });
   } catch (err) {
     console.error(err);
