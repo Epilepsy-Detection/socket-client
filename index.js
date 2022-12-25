@@ -2,8 +2,11 @@ const { io } = require('socket.io-client');
 const axios = require('axios');
 
 // Read from config file
-const config = require('./config');
 const readFileAsStream = require('./readFileAsStream');
+
+const args = process.argv.slice(2);
+const role = args[0] ?? 'doctor';
+const config = require('./config')(role);
 
 const authenticateSocket = async () => {
   try {
@@ -12,6 +15,7 @@ const authenticateSocket = async () => {
       email: config.email,
       password: config.password,
     });
+
     const token = response.data.data.token;
 
     if (response.status !== 200) {
@@ -29,10 +33,25 @@ const authenticateSocket = async () => {
       console.log('connected successfully!');
 
       // Send EEG data through the socket connection
-      const fileName = config.FILE_PATH + config.FILE_NAME;
-      readFileAsStream(fileName, (chunk) => {
-        socket.emit('new-message', chunk);
-      });
+      if (role === 'patient') {
+        const fileName = config.FILE_PATH + config.FILE_NAME;
+        readFileAsStream(fileName, (chunk) => {
+          socket.emit('new-eeg-batch-message', chunk);
+        });
+      } else if (role === 'doctor') {
+        socket.emit("get_active_patients")
+      }
+    });
+
+    socket.on("active_patients_result", (patientsIds) => {
+      if (patientsIds && patientsIds.length > 0) {
+        const patientId = patientsIds[0];
+        socket.emit("associate_patient", patientId);
+      }
+    });
+
+    socket.on('new-patient-message', (msg) => {
+      console.log(msg);
     });
 
     socket.on('disconnect', () => {
